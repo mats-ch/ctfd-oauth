@@ -66,10 +66,12 @@ def load(app):
             db.session.add(user)
             db.session.commit()
             db.session.flush()
+            login_user(user)
             return user
     def create_or_get_user(username, displayName):
         user = retrieve_user_from_database(username)
         if user is not None:
+            login_user(user)
             return user
         if create_missing_user:
             return create_user(username, displayName)
@@ -121,8 +123,6 @@ def load(app):
 
         provider_user = provider_users[oauth_provider]() # Resolved lambda
         session.regenerate()
-        if provider_user is not None:
-            login_user(provider_user)
         return redirect('/')
 
     app.register_blueprint(provider_blueprint, url_prefix=authentication_url_prefix)
