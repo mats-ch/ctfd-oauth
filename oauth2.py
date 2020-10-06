@@ -61,8 +61,8 @@ def load(app):
             return user
     def create_user(username, displayName):
         with app.app_context():
-            log('logins', "[{date}] {ip} - " + user.name + " - No OAuth2 bridged user found, creating user")
             user = Users(email=username, name=displayName.strip())
+            log('logins', "[{date}] {ip} - " + user.name + " - No OAuth2 bridged user found, creating user")
             db.session.add(user)
             db.session.commit()
             db.session.flush()
@@ -116,7 +116,7 @@ def load(app):
     #######################
     @provider_blueprint.route('/<string:auth_provider>/confirm', methods=['GET'])
     def confirm_auth_provider(auth_provider):
-        if not provider_users.has_key(auth_provider):
+        if not auth_provider in provider_users:
             return redirect('/')
 
         provider_user = provider_users[oauth_provider]() # Resolved lambda
@@ -126,6 +126,7 @@ def load(app):
         return redirect('/')
 
     app.register_blueprint(provider_blueprint, url_prefix=authentication_url_prefix)
+    print(app.register_blueprint)
 
     ###############################
     # Application Reconfiguration #
